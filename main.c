@@ -87,12 +87,13 @@ void do_pass(int pass, FILE *inFile, FILE *outFile, struct label *labels)
         int is_asm_line = 0;
 
         line[strcspn(line, "\n")] = 0;
-        if (line[0] == 0)
-            continue;
 
         char *comment = strchr(line, ';'); // removing comments
         if (comment)
             *comment = '\0';
+
+        if (line[0] == 0)
+            continue;
 
         char line_copy[100];
         strcpy(line_copy, line);

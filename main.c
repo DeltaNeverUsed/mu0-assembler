@@ -11,9 +11,9 @@ struct label
 
 int label_to_addr(struct label *labels, char *label)
 {
-    for (int l = 0; l < sizeof(labels); l++)
+    for (int l = 0; l < 4096; l++)
     {
-        if (strstr(labels[l].label, label))
+        if (strncmp(labels[l].label, label, sizeof(label)) == 0)
         {
             return labels[l].addr;
         }
@@ -92,9 +92,6 @@ void do_pass(int pass, FILE *inFile, FILE *outFile, struct label *labels)
         if (comment)
             *comment = '\0';
 
-        if (line[0] == 0)
-            continue;
-
         char line_copy[100];
         strcpy(line_copy, line);
 
@@ -102,6 +99,9 @@ void do_pass(int pass, FILE *inFile, FILE *outFile, struct label *labels)
         char *parm = strtok(NULL, " ");
         parm = strtok(parm, "+");
         char *offset = strtok(NULL, "+");
+
+        if (inst == NULL)
+            continue;
 
         char line_lower[100];
         for (int i = 0; i < 100; i++)
@@ -123,17 +123,17 @@ void do_pass(int pass, FILE *inFile, FILE *outFile, struct label *labels)
             printf("Label: %s at: %u\n", local.label, local.addr);
         }
         else if (
-            strstr(inst, "lda") || // normal insructions
-            strstr(inst, "sto") ||
-            strstr(inst, "add") ||
-            strstr(inst, "sub") ||
-            strstr(inst, "jmp") ||
-            strstr(inst, "jne") ||
-            strstr(inst, "stp") ||
+            strncmp(inst, "lda", 3) == 0 || // normal insructions
+            strncmp(inst, "sto", 3) == 0 ||
+            strncmp(inst, "add", 3) == 0 ||
+            strncmp(inst, "sub", 3) == 0 ||
+            strncmp(inst, "jmp", 3) == 0 ||
+            strncmp(inst, "jne", 3) == 0 ||
+            strncmp(inst, "stp", 3) == 0 ||
             // extra
-            strstr(inst, "sa"))
+            strncmp(inst, "sa", 2) == 0)
         {
-            is_asm_line = 1;
+            is_asm_line += 1;
             if (pass == 1)
             {
                 int addr = 0;
@@ -155,7 +155,7 @@ void do_pass(int pass, FILE *inFile, FILE *outFile, struct label *labels)
                     addr > 0xFFF ||
                     (strstr(inst, "stp") && addr > 0x0))
                 {
-                    printf("WARNING line %d, instruction: %s, has a input that it is capable of %03X\n", line_num, inst, addr);
+                    printf("WARNING line %d, instruction: %s, has a input that it is not capable of %03X\n", line_num, inst, addr);
                 }
                 int off = 0;
                 if (offset)
@@ -213,6 +213,7 @@ int main(int argc, char *argv[])
     struct label labels[4096];
 
     do_pass(0, inFile, outFile, labels);
+
     do_pass(1, inFile, outFile, labels);
 
     fclose(inFile);

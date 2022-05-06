@@ -74,6 +74,8 @@ int inst_to_hex(char *inst)
     // extra
     if (strstr(inst, "sa"))
         return 0x5;
+    if (strstr(inst, "ldr"))
+        return 0x8;
 }
 
 void do_pass(int pass, FILE *inFile, FILE *outFile, struct label *labels)
@@ -131,7 +133,8 @@ void do_pass(int pass, FILE *inFile, FILE *outFile, struct label *labels)
             strncmp(inst, "jne", 3) == 0 ||
             strncmp(inst, "stp", 3) == 0 ||
             // extra
-            strncmp(inst, "sa", 2) == 0)
+            strncmp(inst, "sa", 2) == 0 ||
+            strncmp(inst, "ldr", 2) == 0)
         {
             is_asm_line += 1;
             if (pass == 1)

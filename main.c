@@ -13,7 +13,7 @@ int label_to_addr(struct label *labels, char *label)
 {
     for (int l = 0; l < 4096; l++)
     {
-        if (strncmp(labels[l].label, label, sizeof(label)) == 0)
+        if (strncmp(labels[l].label, label, sizeof(labels[l].label)) == 0)
         {
             return labels[l].addr;
         }

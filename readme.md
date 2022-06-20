@@ -39,7 +39,6 @@ Basic Usage
 Here's an example of what the output would look like using "test.asm" 
 
 ```asm
-PS C:\Users\Sinus\Desktop\mu0 assembler> ./assembler.exe test.asm
 4 004
 0 01D
 1 01B
